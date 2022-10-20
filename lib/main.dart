@@ -1,7 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:signalr_mobile/src/view/home/home_view.dart';
+import 'dart:io';
 
-void main() => runApp(const MyApp());
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'src/view/chat/chat_view.dart';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
+
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+  HttpOverrides.global = MyHttpOverrides();
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,8 +26,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'SignalR',
-      home: HomeView(),
+      title: 'SignalR Chat App',
+      home: ChatView(),
     );
   }
 }
